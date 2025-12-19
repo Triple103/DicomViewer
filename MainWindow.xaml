@@ -1,21 +1,33 @@
-﻿<Window x:Class="DICOM_HPF5Viewer.MainWindow"
+﻿<Window x:Class="DicomViewer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DICOM_HPF5Viewer"
+        xmlns:local="clr-namespace:DicomViewer"
+        xmlns:userControls="clr-namespace:DicomViewer.UserControls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    
+    <Grid Background="BlueViolet">
         <Grid.RowDefinitions>
-            <RowDefinition Height="297*"/>
-            <RowDefinition Height="137*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="Red" BorderThickness="1" HorizontalAlignment="Left" Height="391" Margin="199,18,0,0" VerticalAlignment="Top" Width="337" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="2">
-            <Image Name="MainImg"  RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center">
-            </Image>
-        </Border>
-        <Button Name="FileExplorer" Click="FileExpl" ClickMode="Release" Content="File" Margin="2,1,763,266"/>
+        <userControls:AnnotedImage Grid.Column="0"/>
+        <userControls:TopControlBar Grid.Column="0"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+
+            <userControls:FileControl Grid.Column="0"/>
+
+            <userControls:AnnotedImage Grid.Column="1"/>
+        </Grid>
+
 
     </Grid>
 </Window>

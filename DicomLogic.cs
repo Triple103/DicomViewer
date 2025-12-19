@@ -3,7 +3,7 @@ using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.Render;
 using System.Windows.Media;
 
-namespace DICOM_HPF5Viewer
+namespace DicomViewer
 {
     internal class DicomLogic
     {
@@ -36,7 +36,7 @@ namespace DICOM_HPF5Viewer
 
         }
 
-        public UnpackedDicom UnpackDicom(DicomFile dicom)
+        public UnpackedDicom UnpackDicom(DicomFile dicom,string nameDicom)
         {
             //Working objects
             var dataset = dicom.Dataset;
@@ -44,7 +44,7 @@ namespace DICOM_HPF5Viewer
 
             //Get general image parameters
             PixelFormat pixelFormat = DicomFormatReader(dataset);
-            UnpackedDicom UDicom = new UnpackedDicom(dicom, pixelFormat);
+            UnpackedDicom UDicom = new UnpackedDicom(dicom, pixelFormat,nameDicom);
 
             //initialisation si possible des paramètres potentiellement changeants d'une frame a l'autre
 

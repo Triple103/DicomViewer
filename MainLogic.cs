@@ -1,18 +1,17 @@
 ﻿using FellowOakDicom;
-using System.Windows.Media;
 
-namespace DICOM_HPF5Viewer
+namespace DicomViewer
 {
-    class MainLogic
+    public class MainLogic
     {
         FileLoader fileLoader;
         DicomLogic dicomLogic;
 
         //Loaded files
-        private LinkedList<UnpackedDicom> Dicoms = new LinkedList<UnpackedDicom>();
+        public List<UnpackedDicom> Dicoms { get; private set; } = new List<UnpackedDicom>();
 
         //Events
-        public event Action<ImageSource>? ImageChange;
+        public event Action<UnpackedDicom>? NewDicom;
 
         // Constructeur
         public MainLogic()
@@ -23,15 +22,18 @@ namespace DICOM_HPF5Viewer
 
         public void DicomLoad()
         {
-            DicomFile file = fileLoader.LoadDicom();
-            Dicoms.AddFirst(dicomLogic.UnpackDicom(file));
-            ImageChange?.Invoke(Dicoms.First().GetBitmap());
+            (DicomFile? file,string? name)[] loaded = fileLoader.LoadDicom();
+            if (loaded[0].file != null)
+            {
+                for (int i = 0; i < loaded.Length; i++)
+                {
+                    Dicoms.Add(dicomLogic.UnpackDicom(loaded[i].file, loaded[i].name));
+                    NewDicom?.Invoke(Dicoms.Last());
+                }
+            }
         }
 
-        public async Task Run()
-        {
-            while (true) { await Task.Delay(100); }
-        }
+
 
 
     }
