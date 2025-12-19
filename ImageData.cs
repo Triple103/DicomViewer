@@ -1,4 +1,4 @@
-﻿namespace DICOM_HPF5Viewer
+﻿namespace DicomViewer
 {
     public class ImageData
     {

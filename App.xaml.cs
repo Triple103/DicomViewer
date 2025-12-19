@@ -1,16 +1,14 @@
-﻿using FellowOakDicom;
-using FellowOakDicom.Imaging;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Configuration;
+using System.Data;
 using System.Windows;
 
-namespace DICOM_HPF5Viewer
+namespace DicomViewer
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
-
     }
 
 }
