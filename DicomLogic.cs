@@ -8,43 +8,16 @@ namespace DicomViewer
     internal class DicomLogic
     {
 
-
-
-        //Dictionnaire pour gérer les formats d'image Dicom
-
-        public static readonly Dictionary
-        <(int? samplePerPixel, int? bitsAllocated, int pixelRepresentation, string? photometric), PixelFormat>
-        FormatHandler = new Dictionary
-        <(int? samplePerPixel, int? bitsAllocated, int pixelRepresentation, string? photometric), PixelFormat>
-        {
-                { (1, 8, 0, "MONOCHROME2"),  PixelFormats.Gray8},
-                { (1, 16, 0, "MONOCHROME2"), PixelFormats.Gray16},
-                { (3, 8, 0, "RGB"),          PixelFormats.Rgb24 },
-                { (3, 16, 0, "RGB"),         PixelFormats.Rgb48 }
-        };
-
-        public PixelFormat DicomFormatReader(DicomDataset dataset)
-        {
-            int? samplesPerPixel = dataset.GetSingleValueOrDefault<ushort?>(DicomTag.SamplesPerPixel, null);
-            int? bitsAllocated = dataset.GetSingleValueOrDefault<ushort?>(DicomTag.BitsAllocated, null);
-            int pixelRepresentation = dataset.GetSingleValueOrDefault<ushort>(DicomTag.PixelRepresentation, 0);
-            string? photometric = dataset.GetSingleValueOrDefault<string?>(DicomTag.PhotometricInterpretation, null);
-
-            var key = (samplesPerPixel, bitsAllocated, pixelRepresentation, photometric);
-            PixelFormat format = FormatHandler[key];
-            return (format);
-
-        }
-
-        public UnpackedDicom UnpackDicom(DicomFile dicom,string nameDicom)
+        public static UnpackedDicom UnpackDicom(DicomFile dicom, string nameDicom)
         {
             //Working objects
             var dataset = dicom.Dataset;
             var pixelData = DicomPixelData.Create(dataset);
+            UnpackedDicom UDicom = new UnpackedDicom(dicom, nameDicom);
 
-            //Get general image parameters
-            PixelFormat pixelFormat = DicomFormatReader(dataset);
-            UnpackedDicom UDicom = new UnpackedDicom(dicom, pixelFormat,nameDicom);
+            var dicomImg = new DicomImage(dataset);
+            var img = dicomImg.RenderImage();
+            Console.WriteLine(img.GetType());
 
             //initialisation si possible des paramètres potentiellement changeants d'une frame a l'autre
 
@@ -103,8 +76,70 @@ namespace DicomViewer
             return UDicom;
         }
 
+        //Pixel format handling
+        public static SupportedFormats FormatAttributor(UnpackedDicom dicom)
+        {
+            var forma = dicom.AllTags.GetSingleValue<string>(DicomTag.PhotometricInterpretation);
+            return (dicom.BytesAllocated, forma) switch
+            {
+                (1, "MONOCHROME2") => SupportedFormats.Gray8,
+                (2, "MONOCHROME2") => SupportedFormats.Gray16,
+            };
+        }
+
+        public static PixelFormat FormatSolver(UnpackedDicom dicom)
+        {
+            return dicom.Format switch
+            {
+                SupportedFormats.Gray8 => PixelFormats.Gray8,
+                SupportedFormats.Gray16 => PixelFormats.Gray16,
+                SupportedFormats.Gray32 => PixelFormats.Gray32Float,
+            };
+        }
+
+        //Windowers
+        public static uint[] LinGreyscaleWindower(UnpackedDicom dicom, int indexSlice,
+                                                double? windowCenter = null, double? windowWidth = null)
+        {
+            ImageData slice = dicom.imageDataList[indexSlice];
+            double wC = windowCenter ?? slice.BaseWindowCenter ?? dicom.BaseWindowCenterGen -0.5; // -0.5 and +1 from DICOM norm
+            double wW = windowWidth ?? slice.BaseWindowWidth ?? dicom.BaseWindowWidthGen - 1;
+            uint[] clamped = new uint[slice.Data.Length];
+
+            double windowScale = Math.Pow(2, (dicom.BytesPerPx*8)) - 1; // Car BitmapSource.Create est sensible a PixelFormat.BitsPerPixel
+
+            double UpperBound = wC + (wW / 2);
+            double LowerBound = wC - (wW / 2);
+            for (int i = 0; i < slice.Data.Length; i++)
+            {
+                var x = Math.Clamp(slice.Data[i], LowerBound, UpperBound);
+                clamped[i] = (uint)(windowScale * (x - LowerBound) / (UpperBound - LowerBound));
+            }
+            return clamped;
+        }
+
+
+
+        /*public uint[] WindowlessFormats(UnpackedDicom dicom, int indexSlice)
+        {
+            var data = dicom.imageDataList[indexSlice].Data;
+            dicom.Format switch
+            {
+                SupportedFormats.YCbCr_FULL_422 =>
+            };
+            
+            var output = new uint[data.Length];
+            for (int i=0, i< data.Length,int++)
+            {
+                output[i]= (uint)data[i];
+            return
+
+        }*/
+
+
 
     }
+
 
 
 

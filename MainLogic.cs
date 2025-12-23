@@ -22,12 +22,12 @@ namespace DicomViewer
 
         public void DicomLoad()
         {
-            (DicomFile? file,string? name)[] loaded = fileLoader.LoadDicom();
+            (DicomFile? file, string? name)[] loaded = fileLoader.LoadDicom();
             if (loaded[0].file != null)
             {
                 for (int i = 0; i < loaded.Length; i++)
                 {
-                    Dicoms.Add(dicomLogic.UnpackDicom(loaded[i].file, loaded[i].name));
+                    Dicoms.Add(DicomLogic.UnpackDicom(loaded[i].file, loaded[i].name));
                     NewDicom?.Invoke(Dicoms.Last());
                 }
             }

@@ -2,10 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace DicomViewer
 {
+#nullable enable
     public partial class ViewModel : ObservableObject
     {
         private MainLogic mainLogick { get; }
@@ -41,13 +41,15 @@ namespace DicomViewer
             mainLogick.DicomLoad();
         }
 
-        partial void OnSelectedDicomChanged(DicomFileViewModel self)
+
+        // UI Reactions
+        partial void OnSelectedDicomChanged(DicomFileViewModel? value)
         {
-            if (self.fileIndex < 0)
-                return;
+            if (value == null) { return; }
+            if (value.fileIndex < 0) { return; }
 
             ListSlices.Clear();
-            var dicom = mainLogick.Dicoms[self.fileIndex];
+            var dicom = mainLogick.Dicoms[value.fileIndex];
             for (int i = 0; i < dicom.imageDataList.Count; i++)
             {
                 var slice = new SliceModel(dicom, i);
@@ -61,15 +63,15 @@ namespace DicomViewer
         //Outputs
         private void AddDicomView(UnpackedDicom dicomFile)
         {
-            var dicomView = new DicomFileViewModel(dicomFile, mainLogick.Dicoms.Count-1);
+            var dicomView = new DicomFileViewModel(dicomFile, mainLogick.Dicoms.Count - 1);
             LoadedDicomViews.Add(dicomView);
 
-            if (mainLogick.Dicoms.Count != LoadedDicomViews.Count)
+            /*if (mainLogick.Dicoms.Count != LoadedDicomViews.Count)
             {
                 Console.WriteLine("Erreurs d'indexation des viewmodels dicoms");
-            }
+            }*/
 
-            SelectedDicom=LoadedDicomViews[LoadedDicomViews.Count-1];
+            SelectedDicom = LoadedDicomViews[LoadedDicomViews.Count - 1];
         }
 
 

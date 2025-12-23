@@ -13,17 +13,23 @@
         </Grid.RowDefinitions>
 
 
-        <ItemsControl Name="SlicesField" ItemsSource="{Binding ListSlices}" Grid.Row="0">
-            <ItemsControl.ItemTemplate>
+        <ListBox Name="SlicesField" ItemsSource="{Binding ListSlices}" Grid.Row="0">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="White">
+                    <Border BorderBrush="White" Padding="10">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
-                            
-                            <Image Source="{Binding Image}"  Margin="2" Grid.Row="0"/>
+
+                            <Image Source="{Binding Image}"  Margin="0 0 0 2" Grid.Row="0"/>
 
                             <TextBlock Background="AliceBlue" Grid.Row="1">
                                 <TextBlock.Text>
@@ -33,22 +39,11 @@
                         </Grid>
                     </Border>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-
+        
+        
         <ListBox Name="LoadedDicomsField" ItemsSource="{Binding LoadedDicomViews}" SelectedItem="{Binding SelectedDicom, Mode=TwoWay}"
                  Grid.Row="1" Background="BlueViolet">
             <ListBox.ItemTemplate>
